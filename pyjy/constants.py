@@ -1,8 +1,8 @@
 class GameConfig:
     
     # Game window dimensions
-    SCREEN_WIDTH = 320*3
-    SCREEN_HEIGHT = 240*3
+    SCREEN_WIDTH = 320*2
+    SCREEN_HEIGHT = 240*2
     
     FPS = 60
     

@@ -32,6 +32,8 @@ class SceneMapData:
                                     .reshape(GameConfig.SUB_SCENE_NUMBER, \
                                             GameConfig.SUB_SCENE_EVENT_NUMBER_PER_SCENE, \
                                             GameConfig.SUB_SCENE_EVENT_DATA_LENGTH)
+                                    
+        self.switch_scene_data_by_id(1)
     
     
     def switch_scene_data_by_id(self, scene_id):

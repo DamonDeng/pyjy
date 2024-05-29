@@ -4,10 +4,14 @@ import pygame
 
 class MainCharacter:
     
-    def __init__(self, x, y, texture_manager):
+    def __init__(self, x, y, texture_manager, main_scene_data, sub_scene_data):
         self.x = x
         self.y = y
         self.texture_manager = texture_manager
+        self.main_scene_data = main_scene_data
+        self.sub_scene_data = sub_scene_data
+        
+        
         self.current_direction = MainCharacterTextureManager.DOWN
         self.current_pic_index = 0
         
@@ -67,23 +71,35 @@ class MainCharacter:
                 self.current_pic_index = 0
                 self.move_count = 0
             
-            self.move_count += 1
+            
             if self.move_count % self.move_pic_delay == 0:
-                self.current_pic_index += 1
-                if self.current_pic_index >= MainCharacterTextureManager.PIC_NUMBER:
-                    self.current_pic_index = 1
-                    
+                
+                can_move = False
+                print('self.x: ', self.x, 'self.y: ', self.y)
                 if input_move_direction == MainCharacterTextureManager.UP:
-                    self.y -= 1
+                    if self.sub_scene_data.walkable_map[self.y - 1][self.x]:
+                        can_move = True
+                        self.y -= 1
                 elif input_move_direction == MainCharacterTextureManager.DOWN:
-                    self.y += 1
+                    if self.sub_scene_data.walkable_map[self.y + 1][self.x]:
+                        can_move = True
+                        self.y += 1
                 elif input_move_direction == MainCharacterTextureManager.LEFT:
-                    self.x -= 1
+                    if self.sub_scene_data.walkable_map[self.y][self.x - 1]:
+                        can_move = True
+                        self.x -= 1
                 elif input_move_direction == MainCharacterTextureManager.RIGHT:
-                    self.x += 1
-                    
-                self.moving_x = self.x
-                self.moving_y = self.y
+                    if self.sub_scene_data.walkable_map[self.y][self.x + 1]:
+                        can_move = True
+                        self.x += 1
+                if can_move:
+                    self.current_pic_index += 1
+                    if self.current_pic_index >= MainCharacterTextureManager.PIC_NUMBER:
+                        self.current_pic_index = 1
+                    self.moving_x = self.x
+                    self.moving_y = self.y
+                
+            self.move_count += 1
 
         
         
