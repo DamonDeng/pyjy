@@ -105,7 +105,7 @@ class MainCharacter:
             if self.move_count % self.move_pic_delay == 0:
                 
                 can_move = False
-                print('self.x: ', self.x, 'self.y: ', self.y)
+                # print('self.x: ', self.x, 'self.y: ', self.y)
                 if input_move_direction == MainCharacterTextureManager.UP:
                     if self.sub_scene_data.walkable_map[self.y - 1][self.x]:
                         can_move = True
