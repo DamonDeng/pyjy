@@ -52,6 +52,14 @@ def main():
     # Initialize Pygame
     pygame.init()
     
+    pygame.mixer.init()
+
+    # Load the MIDI music file
+    pygame.mixer.music.load("./original_resource/music/1.mid")
+
+    # Play the music in an infinite loop
+    pygame.mixer.music.play(-1)
+    
     # Background color
     WHITE = (255, 255, 255)
 
@@ -88,6 +96,18 @@ def main():
                     y = current_scene_map_data.scene_map_info["EntranceY"]
                     main_character.set_location(x, y)
                     camera.follow_character(main_character)
+                    
+                    music_id = current_scene_map_data.scene_map_info["EntranceMusic"]
+                    
+                    if music_id > 0 and music_id < 24:
+                    
+                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
+                        
+                        pygame.mixer.music.load(music_file_path)
+
+                        # Play the music in an infinite loop
+                        pygame.mixer.music.play(-1)
+                    
                 elif event.key == pygame.K_z:
                     # switch to the previous scene
                     current_scene_id = current_scene_map_data.scene_id
@@ -99,6 +119,18 @@ def main():
                     y = current_scene_map_data.scene_map_info["EntranceY"]
                     main_character.set_location(x, y)
                     camera.follow_character(main_character)
+                    
+                    music_id = current_scene_map_data.scene_map_info["EntranceMusic"]
+                    
+                    if music_id > 0 and music_id < 24:
+                    
+                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
+                        
+                        pygame.mixer.music.load(music_file_path)
+
+                        # Play the music in an infinite loop
+                        pygame.mixer.music.play(-1)
+                    
                 
                     
                 # Move the camera based on key presses
