@@ -9,9 +9,11 @@ class SceneMapData:
     grid_number_width = GameConfig.SUB_SCENE_GRID_NUMBER_W
     grid_number_height = GameConfig.SUB_SCENE_GRID_NUMBER_H
     
-    def __init__(self):
+    def __init__(self, scene_map_infos):
         self.scene_layer_np = None
         self.event_data_np = None
+        
+        self.scene_map_infos = scene_map_infos
         
         self.scene_id = 0
     
@@ -48,6 +50,11 @@ class SceneMapData:
         
         self.event_data = self.event_data_np[scene_id]
         
+        
+        # todo, need to rewrite the following code to increase the performance
+        # the basic idea is putting this into the load method to calculate once
+        # instead of calculating every time when switch the scene
+        
         self.event_current_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
         self.event_start_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
         self.event_end_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
@@ -73,6 +80,10 @@ class SceneMapData:
                     
                 if self.event_data[i][0] == 1:
                     self.walkable_map[self.event_data[i][10], self.event_data[i][9]] = False
+                    
+        for i in range(len(self.scene_map_infos)):
+            if self.scene_map_infos[i]["ID"] == self.scene_id:
+                self.scene_map_info = self.scene_map_infos[i]
             
             
     

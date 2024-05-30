@@ -24,7 +24,7 @@ class Camera:
         start_x = (grid_number_w/2) * grid_size_w
         start_y = 0
         
-        (grid_x, grid_y) = (character.moving_x, character.moving_y)
+        (grid_x, grid_y) = (character.x, character.y)
         
         # putting the camera view on the center of the character
         grid_x = grid_x - 2

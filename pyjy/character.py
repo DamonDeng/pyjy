@@ -4,7 +4,20 @@ import pygame
 
 class MainCharacter:
     
+    InMain = 0
+    InSub = 1
+    InFight = 2
+    
     def __init__(self, x, y, texture_manager, main_scene_data, sub_scene_data):
+        self.scene_status = MainCharacter.InMain
+        
+        self.main_x = x
+        self.main_y = y
+        self.sub_x = 0
+        self.sub_y = 0
+        self.fight_x = 0
+        self.fight_y = 0
+        
         self.x = x
         self.y = y
         self.texture_manager = texture_manager
@@ -15,17 +28,34 @@ class MainCharacter:
         self.current_direction = MainCharacterTextureManager.DOWN
         self.current_pic_index = 0
         
-        self.is_moving_to_target = False
-        self.target_x = 0
-        self.target_y = 0
+        # self.is_moving_to_target = False
+        # self.target_x = 0
+        # self.target_y = 0
         
-        self.moving_x = x
-        self.moving_y = y
+        # self.moving_x = x
+        # self.moving_y = y
         
-        self.move_speed = 0.1 # percentage of grid moved per second
+        # self.move_speed = 0.1 # percentage of grid moved per second
         self.move_pic_delay = 5 # how many frame to change the pic
         self.move_count = 0
-        self.has_move_action = False
+        # self.has_move_action = False
+        
+    def set_scene_status(self, status):
+        self.scene_status = status
+        
+    def set_location(self, x, y):
+        if self.scene_status == MainCharacter.InMain:
+            self.main_x = x
+            self.main_y = y
+        elif self.scene_status == MainCharacter.InSub:
+            self.sub_x = x
+            self.sub_y = y
+        elif self.scene_status == MainCharacter.InFight:
+            self.fight_x = x
+            self.fight_y = y
+            
+        self.x = x
+        self.y = y
         
     def get_current_texture(self):
         texture = self.texture_manager.get_texture(self.current_direction, self.current_pic_index)

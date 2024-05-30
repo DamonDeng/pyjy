@@ -32,3 +32,10 @@ class GameConfig:
     SUB_SCENE_GRID_SIZE_W = 36
     SUB_SCENE_GRID_SIZE_H = 18
     
+    # the following two values can't be changed, it is related to the storage format of the game data
+    TEAMMATE_COUNT = 6
+    ITEM_IN_BAG_COUNT = 1000
+    
+    ROLE_MAGIC_COUNT = 10
+    ROLE_TAKING_ITEM_COUNT = 4
+    
