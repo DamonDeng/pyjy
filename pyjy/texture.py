@@ -51,6 +51,13 @@ class TextureManager:
             
             for file_name in file_names:
                 if file_name.endswith(".png"):
+                    if "-" in file_name:
+                        # skip the files that contain "-", which should be backup files
+                        continue
+                    if "/" in file_name:
+                        # it is a folder, skip it
+                        continue
+                    
                     if "_" in file_name:
                         texture_number = int(os.path.splitext(file_name.split("_")[0])[0])
                     else:
@@ -119,6 +126,13 @@ class TextureManager:
             
         for file_name in file_names:
             if file_name.endswith(".png"):
+                if "-" in file_name:
+                    # skip the files that contain "-", which should be backup files
+                    continue
+                if "/" in file_name:
+                    # it is a folder, skip it
+                    continue
+                
                 if "_" in file_name:
                     texture_number = int(os.path.splitext(file_name.split("_")[0])[0])
                 else:

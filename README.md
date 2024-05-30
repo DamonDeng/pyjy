@@ -21,12 +21,18 @@ As most developers interested in this project are likely Chinese, the following 
 目前项目刚开始，启动也比较简单：
 
 1. 克隆或下载本项目代码。
-2. 找到《金庸群侠传》的原版软件，将 `resource` 和 `save` 两个目录拷贝到本项目的 `original_resource` 目录中。拷贝完成后的目录结构如下：
+2. 找到《金庸群侠传》的原版软件，将 `resource`, `music`, `save` 这几个个目录拷贝到本项目的 `original_resource` 目录中。拷贝完成后的目录结构如下：
    ```
    pyjy
    |-----original_resource
-          |
+          |-----music
           |-----resource
           |-----save
    ```
 3. 进入 `pyjy` 目录，运行 `python ./main.py`
+
+4. 开始游戏
+
+目前只实现了84个子场景，在场景中通过方向键移动。
+然后`z`键切换到上一个场景，`x`键切换到下一个场景
+
