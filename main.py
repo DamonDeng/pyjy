@@ -101,7 +101,7 @@ def main():
                     
                     if music_id > 0 and music_id < 24:
                     
-                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
+                        music_file_path = "./original_resource/music/" + str(music_id) + ".mid"
                         
                         pygame.mixer.music.load(music_file_path)
 
@@ -124,7 +124,7 @@ def main():
                     
                     if music_id > 0 and music_id < 24:
                     
-                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
+                        music_file_path = "./original_resource/music/" + str(music_id) + ".mid"
                         
                         pygame.mixer.music.load(music_file_path)
 
