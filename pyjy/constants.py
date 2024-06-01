@@ -10,6 +10,18 @@ class GameConfig:
     SCREEN_TITLE = "Py金庸群侠传"
     GAME_TITLE = "Py金庸群侠传"
     
+    # Main Scene setting
+    
+    MAIN_SCENE_WIDTH = 320
+    MAIN_SCENE_HEIGHT = 240
+    
+    
+    MAIN_SCENE_GRID_NUMBER_W = 480
+    MAIN_SCENE_GRID_NUMBER_H = 480
+    
+    MAIN_SCENE_GRID_SIZE_W = 36
+    MAIN_SCENE_GRID_SIZE_H = 18
+    
     # Sub Scene setting
     
     SUB_SCENE_WIDTH = 320

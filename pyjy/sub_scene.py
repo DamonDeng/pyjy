@@ -4,7 +4,7 @@ from pyjy.utils import BinaryReader
 
 
 
-class SceneMapData:
+class SubSceneMapData:
     
     grid_number_width = GameConfig.SUB_SCENE_GRID_NUMBER_W
     grid_number_height = GameConfig.SUB_SCENE_GRID_NUMBER_H
@@ -41,12 +41,12 @@ class SceneMapData:
     def switch_scene_data_by_id(self, scene_id):
         self.scene_id = scene_id
         
-        self.surface_map = self.scene_layer_np[scene_id][0].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
-        self.building_map = self.scene_layer_np[scene_id][1].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
-        self.decoration_map = self.scene_layer_np[scene_id][2].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
-        self.event_id_map = self.scene_layer_np[scene_id][3].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
-        self.building_hight_map = self.scene_layer_np[scene_id][4].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
-        self.decoration_hight_map = self.scene_layer_np[scene_id][5].reshape(SceneMapData.grid_number_width, SceneMapData.grid_number_height)
+        self.surface_map = self.scene_layer_np[scene_id][0].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
+        self.building_map = self.scene_layer_np[scene_id][1].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
+        self.decoration_map = self.scene_layer_np[scene_id][2].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
+        self.event_id_map = self.scene_layer_np[scene_id][3].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
+        self.building_hight_map = self.scene_layer_np[scene_id][4].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
+        self.decoration_hight_map = self.scene_layer_np[scene_id][5].reshape(SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height)
         
         self.event_data = self.event_data_np[scene_id]
         
@@ -55,17 +55,17 @@ class SceneMapData:
         # the basic idea is putting this into the load method to calculate once
         # instead of calculating every time when switch the scene
         
-        self.event_current_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
-        self.event_start_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
-        self.event_end_pic = np.zeros((SceneMapData.grid_number_width, SceneMapData.grid_number_height))
+        self.event_current_pic = np.zeros((SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height))
+        self.event_start_pic = np.zeros((SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height))
+        self.event_end_pic = np.zeros((SubSceneMapData.grid_number_width, SubSceneMapData.grid_number_height))
         
         self.walkable_map = self.building_map == 0
         
         # check the surface_map to see if there is any water grid
         # the checking logic is from the above c++ code from original project
         
-        for x in range(SceneMapData.grid_number_width):
-            for y in range(SceneMapData.grid_number_height):
+        for x in range(SubSceneMapData.grid_number_width):
+            for y in range(SubSceneMapData.grid_number_height):
                 num = self.surface_map[x, y] // 2
                 if (num >= 179 and num <= 181) or num == 261 or num == 511 or (num >= 662 and num <= 665) or num == 674:
                     self.walkable_map[x, y] = False

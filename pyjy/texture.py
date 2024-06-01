@@ -28,7 +28,7 @@ class TextureManager:
             offset_index_file = zip_ref.open('index.ka')
             offset_index_data = offset_index_file.read()
             
-            offset_result = BinaryReader.read_data_to_vector(offset_index_data, "H")
+            offset_result = BinaryReader.read_data_to_vector(offset_index_data, "h")
             
         
             # get all the file names in the folder, and sort them
@@ -183,6 +183,11 @@ class TextureManager:
         if texture_name not in self.textures:
             return (0, 0)
         return self.textures[texture_name]["offset"]
+    
+    def get_image_size(self, texture_name):
+        if texture_name not in self.texture_png:
+            return (0, 0)
+        return self.texture_png[texture_name][0].size
         
         
 class MainCharacterTextureManager():

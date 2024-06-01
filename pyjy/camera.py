@@ -18,6 +18,9 @@ class Camera:
         grid_number_w = GameConfig.SUB_SCENE_GRID_NUMBER_W
         grid_number_h = GameConfig.SUB_SCENE_GRID_NUMBER_H
         
+        grid_number_w = GameConfig.MAIN_SCENE_GRID_NUMBER_W
+        grid_number_h = GameConfig.MAIN_SCENE_GRID_NUMBER_H
+        
         WIDTH = GameConfig.SUB_SCENE_WIDTH
         HEIGHT = GameConfig.SUB_SCENE_HEIGHT
         
@@ -31,14 +34,14 @@ class Camera:
         grid_y = grid_y - 2
         
         #prevent the camera to move outside of designed area
-        if grid_x < 12:
-            grid_x = 12
-        if grid_x > 44:
-            grid_x = 44
-        if grid_y < 15:
-            grid_y = 15
-        if grid_y > 45:
-            grid_y = 45
+        # if grid_x < 12:
+        #     grid_x = 12
+        # if grid_x > 44:
+        #     grid_x = 44
+        # if grid_y < 15:
+        #     grid_y = 15
+        # if grid_y > 45:
+        #     grid_y = 45
         
         # moving with the grid x coordinate
         x = start_x + grid_x * grid_size_w/2
