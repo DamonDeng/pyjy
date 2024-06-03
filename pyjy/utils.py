@@ -8,7 +8,7 @@ class BinaryReader:
         count = length // length_one
         
         format_str = byte_order_str + str(count) + data_type
-        print(format_str)
+        # print(format_str)
         return struct.unpack(format_str, data)
         # vector.extend(struct.unpack(, data[:length]))
 

@@ -2,6 +2,10 @@ import numpy as np
 from pyjy.constants import GameConfig
 from pyjy.utils import BinaryReader
 
+from pyjy.texture import TextureManager
+from pyjy.constants import GameConfig
+from pyjy.constants import SceneType
+
 
 
 class SubSceneMapData:
@@ -149,12 +153,12 @@ class SubSceneDrawer:
         surface_value = self.scene_map_data.surface_map[i, j]
         surface_value = surface_value //2 # because of the original data was doubled in original project
         
-        surface_texture = self.texture_manager.get_texture_pygame(surface_value)
+        surface_texture = self.texture_manager.get_texture_pygame(SceneType.SUB_SCENE, surface_value)
         
         if len(surface_texture) == 0:
             return
         
-        offset_data = self.texture_manager.get_offset(surface_value)
+        offset_data = self.texture_manager.get_offset(SceneType.SUB_SCENE, surface_value)
         
         self.draw_texture(surface_texture[0], screen, i, j, camera, offset_data)
         
@@ -165,18 +169,18 @@ class SubSceneDrawer:
         building_height = self.scene_map_data.building_hight_map[i][j]
         
         if building_texture_id != 0:
-            building_texture = self.texture_manager.get_texture_pygame(building_texture_id)
+            building_texture = self.texture_manager.get_texture_pygame(SceneType.SUB_SCENE, building_texture_id)
             if len(building_texture) != 0:
-                building_offset_data = self.texture_manager.get_offset(building_texture_id)
+                building_offset_data = self.texture_manager.get_offset(SceneType.SUB_SCENE, building_texture_id)
                 self.draw_texture(building_texture[0], screen, i, j, camera, building_offset_data, building_height)
         
         
         # # draw event, including NPCs
         event_texture_id = self.scene_map_data.event_current_pic[i][j]//2
         if event_texture_id != 0:
-            event_texture = self.texture_manager.get_texture_pygame(event_texture_id)
+            event_texture = self.texture_manager.get_texture_pygame(SceneType.SUB_SCENE, event_texture_id)
             if len(event_texture) != 0:
-                building_offset_data = self.texture_manager.get_offset(event_texture_id)
+                building_offset_data = self.texture_manager.get_offset(SceneType.SUB_SCENE, event_texture_id)
                 # using the building height to draw the event
                 self.draw_texture(event_texture[0], screen, i, j, camera, building_offset_data, building_height)
         
@@ -198,9 +202,9 @@ class SubSceneDrawer:
         decoration_texture_id = self.scene_map_data.decoration_map[i][j]//2
         if decoration_texture_id != 0:
             decoration_height = self.scene_map_data.decoration_hight_map[i][j]
-            decoration_texture = self.texture_manager.get_texture_pygame(decoration_texture_id)
+            decoration_texture = self.texture_manager.get_texture_pygame(SceneType.SUB_SCENE, decoration_texture_id)
             if len(decoration_texture) != 0:
-                decoration_offset_data = self.texture_manager.get_offset(decoration_texture_id)
+                decoration_offset_data = self.texture_manager.get_offset(SceneType.SUB_SCENE, decoration_texture_id)
                 self.draw_texture(decoration_texture[0], screen, i, j, camera, decoration_offset_data, decoration_height)
         
         

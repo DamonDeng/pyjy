@@ -1,16 +1,14 @@
-from pyjy.texture import MainCharacterTextureManager
+from pyjy.texture import TextureManager, MainCharacterTextureLoader
 from pyjy.constants import GameConfig
+from pyjy.constants import SceneType
+from pyjy.constants import Direction
 
 import pygame
 
 class MainCharacter:
     
-    InMain = 0
-    InSub = 1
-    InFight = 2
-    
-    def __init__(self, x, y, main_scene_texture_manager, sub_scene_texture_manager, main_scene_data, sub_scene_data):
-        self.scene_status = MainCharacter.InMain
+    def __init__(self, x, y, texture_manager, main_scene_data, sub_scene_data):
+        # self.scene_status = MainCharacter.InMain
         
         self.main_x = x
         self.main_y = y
@@ -21,38 +19,35 @@ class MainCharacter:
         
         self.x = x
         self.y = y
-        self.main_scene_texture_manager = main_scene_texture_manager
-        self.sub_scene_texture_manager = sub_scene_texture_manager
+        
+        self.prev_x = x
+        self.prev_y = y
+        
+        self.current_scene_type = SceneType.MAIN_SCENE
+        
+        self.texture_manager = texture_manager
         self.main_scene_data = main_scene_data
         self.sub_scene_data = sub_scene_data
         
         
-        self.current_direction = MainCharacterTextureManager.DOWN
+        self.current_direction = Direction.DOWN
         self.current_pic_index = 0
         
-        # self.is_moving_to_target = False
-        # self.target_x = 0
-        # self.target_y = 0
-        
-        # self.moving_x = x
-        # self.moving_y = y
-        
-        # self.move_speed = 0.1 # percentage of grid moved per second
         self.move_pic_delay = 5 # how many frame to change the pic
         self.move_count = 0
-        # self.has_move_action = False
         
-    def set_scene_status(self, status):
-        self.scene_status = status
+        
+    def set_scene(self, scene_type):
+        self.current_scene_type = scene_type
         
     def set_location(self, x, y):
-        if self.scene_status == MainCharacter.InMain:
+        if self.current_scene_type == SceneType.MAIN_SCENE:
             self.main_x = x
             self.main_y = y
-        elif self.scene_status == MainCharacter.InSub:
+        elif self.current_scene_type == SceneType.SUB_SCENE:
             self.sub_x = x
             self.sub_y = y
-        elif self.scene_status == MainCharacter.InFight:
+        elif self.current_scene_type == SceneType.FIGHT_SCENE:
             self.fight_x = x
             self.fight_y = y
             
@@ -61,10 +56,8 @@ class MainCharacter:
         
     def get_current_texture(self):
         
-        if self.scene_status == MainCharacter.InMain:
-            texture = self.main_scene_texture_manager.get_texture(self.current_direction, self.current_pic_index)
-        elif self.scene_status == MainCharacter.InSub:
-            texture = self.sub_scene_texture_manager.get_texture(self.current_direction, self.current_pic_index)
+        # print('self.current_scene_type: ', self.current_scene_type)
+        texture = self.texture_manager.get_main_character_texture(self.current_scene_type, self.current_direction, self.current_pic_index)
         
         if len(texture) == 0:
             return None
@@ -73,38 +66,27 @@ class MainCharacter:
     
     def get_current_offset(self):
         
-        if self.scene_status == MainCharacter.InMain:
-            offset = self.main_scene_texture_manager.get_offset(self.current_direction, self.current_pic_index)
-        elif self.scene_status == MainCharacter.InSub:
-            offset = self.sub_scene_texture_manager.get_offset(self.current_direction, self.current_pic_index)
+        
+        offset = self.texture_manager.get_main_character_offset(self.current_scene_type, self.current_direction, self.current_pic_index)
         
         return offset
         
+    def remember_prev_location(self):
+        self.prev_x = self.x
+        self.prev_y = self.y
     
     def tick(self):
         keys = pygame.key.get_pressed()
-        # if keys[pygame.K_w]:
-        #     camera_y -= camera_speed
-        # if keys[pygame.K_s]:
-        #     camera_y += camera_speed
-        # if keys[pygame.K_a]:
-        #     camera_x -= camera_speed
-        # if keys[pygame.K_d]:
-        #     camera_x += camera_speed
-            
-        # if main_character.is_moving_to_target:
-        #     main_character.move(main_character.current_direction, FPS, frame_count)
-        # else:
         
         input_move_direction = None
         if keys[pygame.K_UP]:
-            input_move_direction = MainCharacterTextureManager.UP
+            input_move_direction = Direction.UP
         if keys[pygame.K_DOWN]:
-            input_move_direction = MainCharacterTextureManager.DOWN
+            input_move_direction = Direction.DOWN
         if keys[pygame.K_LEFT]:
-            input_move_direction = MainCharacterTextureManager.LEFT
+            input_move_direction = Direction.LEFT
         if keys[pygame.K_RIGHT]:
-            input_move_direction = MainCharacterTextureManager.RIGHT
+            input_move_direction = Direction.RIGHT
             
         if input_move_direction != None:
             if input_move_direction != self.current_direction:
@@ -114,7 +96,7 @@ class MainCharacter:
             
             
             if self.move_count % self.move_pic_delay == 0:
-                if self.scene_status == MainCharacter.InMain:
+                if self.current_scene_type == SceneType.MAIN_SCENE:
                     can_move = False
                     # print('self.x: ', self.x, 'self.y: ', self.y)
                     MAIN_SCENE_UP_BOUND = 15
@@ -128,170 +110,64 @@ class MainCharacter:
                     # print("LEFT BOUND: ", MAIN_SCENE_LEFT_BOUND)
                     # print("RIGHT BOUND: ", MAIN_SCENE_RIGHT_BOUND)
                     
-                    if input_move_direction == MainCharacterTextureManager.UP:
+                    if input_move_direction == Direction.UP:
                         if self.y - 1 >= MAIN_SCENE_UP_BOUND:
                             if self.main_scene_data.walkable_map[self.y - 1][self.x]:
                                 can_move = True
+                                self.remember_prev_location()
                                 self.y -= 1
-                    elif input_move_direction == MainCharacterTextureManager.DOWN:
+                    elif input_move_direction == Direction.DOWN:
                         if self.y + 1 < MAIN_SCENE_DOWN_BOUND:
                             if self.main_scene_data.walkable_map[self.y + 1][self.x]:
                                 can_move = True
+                                self.remember_prev_location()
                                 self.y += 1
-                    elif input_move_direction == MainCharacterTextureManager.LEFT:
+                    elif input_move_direction == Direction.LEFT:
                         if self.x - 1 >= MAIN_SCENE_LEFT_BOUND:
                             if self.main_scene_data.walkable_map[self.y][self.x - 1]:
                                 can_move = True
+                                self.remember_prev_location()
                                 self.x -= 1
-                    elif input_move_direction == MainCharacterTextureManager.RIGHT:
+                    elif input_move_direction == Direction.RIGHT:
                         if self.x + 1 < MAIN_SCENE_RIGHT_BOUND:
                             if self.main_scene_data.walkable_map[self.y][self.x + 1]:
                                 can_move = True
+                                self.remember_prev_location()
                                 self.x += 1
-                else:
+                elif self.current_scene_type == SceneType.SUB_SCENE:
                     can_move = False
                     # print('self.x: ', self.x, 'self.y: ', self.y)
-                    if input_move_direction == MainCharacterTextureManager.UP:
+                    if input_move_direction == Direction.UP:
                         if self.sub_scene_data.walkable_map[self.y - 1][self.x]:
                             can_move = True
+                            self.remember_prev_location()
                             self.y -= 1
-                    elif input_move_direction == MainCharacterTextureManager.DOWN:
+                    elif input_move_direction == Direction.DOWN:
                         if self.sub_scene_data.walkable_map[self.y + 1][self.x]:
                             can_move = True
+                            self.remember_prev_location()
                             self.y += 1
-                    elif input_move_direction == MainCharacterTextureManager.LEFT:
+                    elif input_move_direction == Direction.LEFT:
                         if self.sub_scene_data.walkable_map[self.y][self.x - 1]:
                             can_move = True
+                            self.remember_prev_location()
                             self.x -= 1
-                    elif input_move_direction == MainCharacterTextureManager.RIGHT:
+                    elif input_move_direction == Direction.RIGHT:
                         if self.sub_scene_data.walkable_map[self.y][self.x + 1]:
                             can_move = True
+                            self.remember_prev_location()
                             self.x += 1
+                else:
+                    can_move = False
+                            
                 if can_move:
                     self.current_pic_index += 1
-                    if self.current_pic_index >= MainCharacterTextureManager.PIC_NUMBER:
+                    if self.current_pic_index >= MainCharacterTextureLoader.PIC_NUMBER:
                         self.current_pic_index = 1
-                    self.moving_x = self.x
-                    self.moving_y = self.y
+                    # self.moving_x = self.x
+                    # self.moving_y = self.y
                 
             self.move_count += 1
-
-        
-        
-    # def move(self, move_direction):
-        
-    #     if move_direction != self.current_direction:
-    #         self.current_direction = move_direction
-    #         self.current_pic_index = 1
-    #         self.move_count = 0
-    #     else:
-    #         self.move_count += 1
-    #         if self.move_count % self.move_pic_delay == 0:
-    #             self.current_pic_index += 1
-    #             if self.current_pic_index >= MainCharacterTextureManager.PIC_NUMBER:
-    #                 self.current_pic_index = 1
-
-        
-    #     if self.is_moving_to_target:
-            
-    #         if self.current_direction == MainCharacterTextureManager.UP:
-                
-    #             if self.moving_y < self.y - 0.5:
-    #                 self.y = self.target_y
-                
-    #             if self.moving_y > self.target_y:
-    #                 self.moving_y -= self.move_speed
-    #             else:
-    #                 self.is_moving_to_target = False
-    #                 if self.has_move_action == False:
-    #                     self.current_pic_index = 0
-                    
-    #         elif self.current_direction == MainCharacterTextureManager.DOWN:
-                
-    #             if self.moving_y > self.y + 0.5:
-    #                 self.y = self.target_y
-                
-    #             if self.moving_y < self.target_y:
-    #                 self.moving_y += self.move_speed
-    #             else:
-    #                 self.is_moving_to_target = False
-    #                 if self.has_move_action == False:
-    #                     self.current_pic_index = 0
-                    
-    #         elif self.current_direction == MainCharacterTextureManager.LEFT:
-                    
-    #             if self.moving_x < self.x - 0.5:
-    #                 self.x = self.target_x
-                
-    #             if self.moving_x > self.target_x:
-    #                 self.moving_x -= self.move_speed
-    #             else:
-    #                 self.is_moving_to_target = False
-    #                 if self.has_move_action == False:
-    #                     self.current_pic_index = 0
-                        
-    #         elif self.current_direction == MainCharacterTextureManager.RIGHT:
-    #             if self.moving_x > self.x + 0.5:
-    #                 self.x = self.target_x
-                
-    #             if self.moving_x < self.target_x:
-    #                 self.moving_x += self.move_speed
-    #             else:
-    #                 self.is_moving_to_target = False
-    #                 if self.has_move_action == False:
-    #                     self.current_pic_index = 0
-                    
-            
-    #     else:
-
-            
-    #         if move_direction == MainCharacterTextureManager.UP:
-                
-    #             # if current_scene_map_data.walkable_map[self.y - 1, self.x]:
-    #                 self.target_y = self.y - 1
-    #                 self.target_x = self.x
-                    
-    #                 self.moving_y = self.y - self.move_speed
-    #                 self.moving_x = self.x
-                    
-    #                 self.is_moving_to_target = True
-    #                 self.has_move_action = True
-                    
-    #         elif move_direction == MainCharacterTextureManager.DOWN:
-                
-    #             # if current_scene_map_data.walkable_map[self.y + 1, self.x]:
-    #                 self.target_y = self.y + 1
-    #                 self.target_x = self.x
-                    
-    #                 self.moving_y = self.y + self.move_speed
-    #                 self.moving_x = self.x
-                    
-    #                 self.is_moving_to_target = True
-    #                 self.has_move_action = True
-                    
-    #         elif move_direction == MainCharacterTextureManager.LEFT:
-                
-    #             # if current_scene_map_data.walkable_map[self.y, self.x - 1]:
-    #                 self.target_y = self.y
-    #                 self.target_x = self.x - 1
-                    
-    #                 self.moving_y = self.y
-    #                 self.moving_x = self.x - self.move_speed
-                    
-    #                 self.is_moving_to_target = True
-    #                 self.has_move_action = True
-                    
-    #         elif move_direction == MainCharacterTextureManager.RIGHT:
-                
-    #             # if current_scene_map_data.walkable_map[self.y, self.x + 1]:
-    #                 self.target_y = self.y
-    #                 self.target_x = self.x + 1
-                    
-    #                 self.moving_y = self.y
-    #                 self.moving_x = self.x + self.move_speed
-                    
-    #                 self.is_moving_to_target = True
-    #                 self.has_move_action = True
                 
             
     def set_direction(self, direction):

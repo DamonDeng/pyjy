@@ -6,8 +6,12 @@ import zipfile
 
 from PIL import Image
 from pyjy.utils import BinaryReader
+from pyjy.constants import Direction
+from pyjy.constants import SceneType
 
-class TextureManager:
+
+
+class TextureLoader:
     
     def __init__ (self):
         self.textures = {}
@@ -190,7 +194,7 @@ class TextureManager:
         return self.texture_png[texture_name][0].size
         
         
-class MainCharacterTextureManager():
+class MainCharacterTextureLoader():
     
     UP = "up"
     DOWN = "down"
@@ -235,13 +239,13 @@ class MainCharacterTextureManager():
         if index < 0 or index >= self.PIC_NUMBER:
             return None
         
-        if direction == MainCharacterTextureManager.UP:
+        if direction == Direction.UP:
             return self.up_texture[index]
-        elif direction == MainCharacterTextureManager.DOWN:
+        elif direction == Direction.DOWN:
             return self.down_texture[index]
-        elif direction == MainCharacterTextureManager.LEFT:
+        elif direction == Direction.LEFT:
             return self.left_texture[index]
-        elif direction == MainCharacterTextureManager.RIGHT:
+        elif direction == Direction.RIGHT:
             return self.right_texture[index]
         
         return None
@@ -251,13 +255,13 @@ class MainCharacterTextureManager():
         if index < 0 or index >= self.PIC_NUMBER:
             return None
         
-        if direction == MainCharacterTextureManager.UP:
+        if direction == Direction.UP:
             return self.up_offset[index]
-        elif direction == MainCharacterTextureManager.DOWN:
+        elif direction == Direction.DOWN:
             return self.down_offset[index]
-        elif direction == MainCharacterTextureManager.LEFT:
+        elif direction == Direction.LEFT:
             return self.left_offset[index]
-        elif direction == MainCharacterTextureManager.RIGHT:
+        elif direction == Direction.RIGHT:
             return self.right_offset[index]
         
         return None
@@ -267,15 +271,121 @@ class MainCharacterTextureManager():
         if index < 0 or index >= self.PIC_NUMBER:
             return None
         
-        if direction == MainCharacterTextureManager.UP:
+        if direction == Direction.UP:
             return self.START_INDEX + index + self.UP_OFF_SET
-        elif direction == MainCharacterTextureManager.DOWN:
+        elif direction == Direction.DOWN:
             return self.START_INDEX + index + self.DOWN_OFF_SET
-        elif direction == MainCharacterTextureManager.LEFT:
+        elif direction == Direction.LEFT:
             return self.START_INDEX + index + self.LEFT_OFF_SET
-        elif direction == MainCharacterTextureManager.RIGHT:
+        elif direction == Direction.RIGHT:
             return self.START_INDEX + index + self.RIGHT_OFF_SET
         
         return None
         
+class TextureManager:
+    
+    def __init__(self, root_folder):
+        self.main_scene_loader = TextureLoader()
+        self.main_scene_loader.load_from_zip_file(root_folder + "/original_resource/resource/mmap.zip")
+        
+        self.sub_scene_loader = TextureLoader()
+        self.sub_scene_loader.load_from_zip_file(root_folder + '/original_resource/resource/smap.zip')
+        
+        self.main_scene_main_character_loader = MainCharacterTextureLoader(self.main_scene_loader)
+        self.sub_scene_main_character_loader = MainCharacterTextureLoader(self.sub_scene_loader) 
+        
+    def get_texture_pygame (self, scene_type, texture_name):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_loader
+        else:
+            return []
+        
+        if texture_name not in loader.texture_pygame:
+            return []
+        return loader.texture_pygame[texture_name]
+       
+    def get_texture (self, scene_type, texture_name):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_loader
+        else:
+            return []
+        if texture_name not in loader.texture_png:
+            return []
+        return loader.texture_png[texture_name]
+    
+    
+    def get_offset (self, scene_type, texture_name):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_loader
+        else:
+            return (0, 0)
+        if texture_name not in loader.textures:
+            return (0, 0)
+        return loader.textures[texture_name]["offset"]
+    
+    
+    def get_image_size(self, scene_type, texture_name):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_loader
+        else:
+            return (0, 0)
+        
+        if texture_name not in loader.texture_png:
+            return (0, 0)
+        return loader.texture_png[texture_name][0].size
+    
+    def get_main_character_texture(self, scene_type, direction, index):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_main_character_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_main_character_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_main_character_loader
+        else:
+            return []
+        
+        return loader.get_texture(direction, index)
+    
+    def get_main_character_offset(self, scene_type, direction, index):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_main_character_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_main_character_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_main_character_loader
+        else:
+            return None
+        
+        return loader.get_offset(direction, index)
+    
+    
+    def get_main_character_texture_id(self, scene_type, direction, index):
+        if scene_type == SceneType.MAIN_SCENE:
+            loader = self.main_scene_main_character_loader
+        elif scene_type == SceneType.SUB_SCENE:
+            loader = self.sub_scene_main_character_loader
+        elif scene_type == SceneType.FIGHT_SCENE:
+            loader = self.sub_scene_main_character_loader
+        else:
+            return None
+        
+        return loader.get_texture_id(direction, index)
+    
+    
         

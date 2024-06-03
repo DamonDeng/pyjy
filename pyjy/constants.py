@@ -1,3 +1,5 @@
+from enum import Enum
+
 class GameConfig:
     
     # Game window dimensions
@@ -50,4 +52,17 @@ class GameConfig:
     
     ROLE_MAGIC_COUNT = 10
     ROLE_TAKING_ITEM_COUNT = 4
+    
+class SceneType(Enum):
+    MAIN_SCENE = 0
+    SUB_SCENE = 1
+    FIGHT_SCENE = 2
+    
+class Direction(Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+    
+
     

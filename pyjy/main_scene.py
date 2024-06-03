@@ -1,14 +1,16 @@
 import numpy as np
 from pyjy.constants import GameConfig
 from pyjy.utils import BinaryReader
+from pyjy.texture import TextureManager
+from pyjy.constants import SceneType
 
 class MainSceneMapData:
     
     grid_number_width  = GameConfig.MAIN_SCENE_GRID_NUMBER_W
     grid_number_height = GameConfig.MAIN_SCENE_GRID_NUMBER_H
     
-    def __init__(self, main_scene_texture_manager):
-        self.main_scene_texture_manager = main_scene_texture_manager
+    def __init__(self, texture_manager):
+        self.texture_manager = texture_manager
          
     def load_data(self, \
         folder_name = "./original_resource/resource/"):
@@ -16,40 +18,18 @@ class MainSceneMapData:
         earch_file_name = folder_name + "earth.002"
         surface_file_name = folder_name + "surface.002"
         building_file_name = folder_name + "building.002"
-        buidx_file_name = folder_name + "buildx.002"
-        buidy_file_name = folder_name + "buildy.002"
-        
-        # earth_result = BinaryReader.read_file_to_vector(earch_file_name, "H")
-        # surface_result = BinaryReader.read_file_to_vector(surface_file_name, "H")
-        # building_result = BinaryReader.read_file_to_vector(building_file_name, "H")
-        # buidx_result = BinaryReader.read_file_to_vector(buidx_file_name, "H")
-        # buidy_result = BinaryReader.read_file_to_vector(buidy_file_name, "H")
         
         earth_result = BinaryReader.read_file_to_vector(earch_file_name, "h")
         surface_result = BinaryReader.read_file_to_vector(surface_file_name, "h")
         building_result = BinaryReader.read_file_to_vector(building_file_name, "h")
-        # buidx_result = BinaryReader.read_file_to_vector(buidx_file_name, "h")
-        # buidy_result = BinaryReader.read_file_to_vector(buidy_file_name, "h")
         
         earth_result_np = np.array(earth_result)
         surface_result_np = np.array(surface_result)
         building_result_np = np.array(building_result)
-        # buidx_result_np = np.array(buidx_result)
-        # buidy_result_np = np.array(buidy_result)
-
+        
         earch_result_reshaped = earth_result_np.reshape((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H))
         surface_result_reshaped = surface_result_np.reshape((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H))
         building_result_reshaped = building_result_np.reshape((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H))
-        
-        # # seems that the buidx and buidy are not used.
-        # buidx_result_reshaped = buidx_result_np.reshape((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H))
-        # buidy_result_reshaped = buidy_result_np.reshape((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H))
-        
-        # self.adjust_building_map = building_result_reshaped.copy()
-        # build a int np array to store the adjusting value.
-        # self.adjust_gride_number = np.zeros((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H), dtype=int)
-        # self.original_building_i = np.zeros((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H), dtype=int)
-        # self.original_building_j = np.zeros((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H), dtype=int)
         
         self.building_everage = np.zeros((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H), dtype=int)
         
@@ -63,7 +43,7 @@ class MainSceneMapData:
         for i in range(GameConfig.MAIN_SCENE_GRID_NUMBER_W):
             for j in range(GameConfig.MAIN_SCENE_GRID_NUMBER_H):
                 if building_result_reshaped[i][j] != 0:
-                    texture_width, texture_height = self.main_scene_texture_manager.get_image_size(building_result_reshaped[i][j]//2)
+                    texture_width, texture_height = self.texture_manager.get_image_size(SceneType.MAIN_SCENE, building_result_reshaped[i][j]//2)
                     
                     # 10 is the edge of the building.
                     # adding the texture width with one grid size
@@ -77,8 +57,6 @@ class MainSceneMapData:
                     for target_i in range(i - gride_width + 1, i + 1):
                         for target_j in range(j - gride_width + 1, j + 1):
                             if target_i > 0 and target_j > 0:
-                                # self.adjust_building_map[target_i][target_j] = building_result_reshaped[i][j]
-                                # self.adjust_gride_number[target_i][target_j] = gride_width - 1
                                 self.walkable_map[target_i][target_j] = False
                                 
                     target_i = i - gride_width + 1
@@ -89,63 +67,14 @@ class MainSceneMapData:
                     if target_j < 0:
                         target_j = 0
                         
-                    # self.adjust_building_map[target_i][target_j] = building_result_reshaped[i][j]
-                    # self.original_building_i[target_i][target_j] = i
-                    # self.original_building_j[target_i][target_j] = j
                     
                     self.building_everage[i][j] = i + j + target_i + target_j
             
-        # self.draw_sequence = self.building_everage.copy()        
-        # self.drawing_sequence = np.zeros((GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H), dtype=int)
-        
-        # number_to_generate = min(GameConfig.MAIN_SCENE_GRID_NUMBER_W, GameConfig.MAIN_SCENE_GRID_NUMBER_H)
-        
-        # for i in range(GameConfig.MAIN_SCENE_GRID_NUMBER_H):
-        #     for j in range(GameConfig.MAIN_SCENE_GRID_NUMBER_W):
-        #         self.drawing_sequence[i][j] = i * GameConfig.MAIN_SCENE_GRID_NUMBER_W*GameConfig.MAIN_SCENE_GRID_NUMBER_H + j + 1
-        
-        # for i in range(GameConfig.MAIN_SCENE_GRID_NUMBER_H):
-        #     for j in range(GameConfig.MAIN_SCENE_GRID_NUMBER_W):
-        #         if self.adjust_building_map[i][j] != 0:
-        #             original_i = self.original_building_i[i][j]
-        #             original_j = self.original_building_j[i][j]
-        #             self.drawing_sequence[original_i][original_j] = i * GameConfig.MAIN_SCENE_GRID_NUMBER_W*GameConfig.MAIN_SCENE_GRID_NUMBER_H + j + 1
-
-        # current_seq = 1
-        
-        # for n in range(number_to_generate): 
-        #     for m_h in range(n, GameConfig.MAIN_SCENE_GRID_NUMBER_W):
-        #         self.drawing_sequence[n][m_h] = current_seq
-        #         current_seq += 1
-                
-        #     for m_v in range(n+1, GameConfig.MAIN_SCENE_GRID_NUMBER_H):
-        #         self.drawing_sequence[m_v][n] = current_seq
-        #         current_seq += 1
-        
-        # current_seq = 1
-        
-        # for n in range(number_to_generate): 
-        #     for m_h in range(n, GameConfig.MAIN_SCENE_GRID_NUMBER_W):
-        #         if self.adjust_building_map[n][m_h] != 0:
-        #             original_i = self.original_building_i[n][m_h]
-        #             original_j = self.original_building_j[n][m_h]
-        #             self.drawing_sequence[original_i][original_j] = current_seq
-        #         current_seq += 1
-                
-        #     for m_v in range(n+1, GameConfig.MAIN_SCENE_GRID_NUMBER_H):
-        #         if self.adjust_building_map[m_v][n] != 0:
-        #             original_i = self.original_building_i[m_v][n]
-        #             original_j = self.original_building_j[m_v][n]
-        #             self.drawing_sequence[original_i][original_j] = current_seq
-        #         current_seq += 1
         
         self.earth_map = earch_result_reshaped
         self.surface_map = surface_result_reshaped
         self.building_map = building_result_reshaped
-        # self.buidx_map = buidx_result_reshaped
-        # self.buidy_map = buidy_result_reshaped
-        
-        # self.walkable_map = self.adjust_building_map == 0
+
 
             
 class MainSceneDrawer:
@@ -217,12 +146,12 @@ class MainSceneDrawer:
         earth_value = earth_value //2
         
         # print("earth_value: ", earth_value)
-        earth_texture = self.texture_manager.get_texture_pygame(earth_value)
+        earth_texture = self.texture_manager.get_texture_pygame(SceneType.MAIN_SCENE, earth_value)
         
         if len(earth_texture) == 0:
             return
         
-        offset_data = self.texture_manager.get_offset(earth_value)
+        offset_data = self.texture_manager.get_offset(SceneType.MAIN_SCENE, earth_value)
         
         self.draw_texture(earth_texture[0], screen, i, j, camera, offset_data)
             
@@ -237,13 +166,13 @@ class MainSceneDrawer:
             # print("surface_value is 0, i, j: ", i, j)
             return
         
-        surface_texture = self.texture_manager.get_texture_pygame(surface_value)
+        surface_texture = self.texture_manager.get_texture_pygame(SceneType.MAIN_SCENE, surface_value)
         
         if len(surface_texture) == 0:
             print("surface not found: ", surface_value)
             return
         
-        offset_data = self.texture_manager.get_offset(surface_value)
+        offset_data = self.texture_manager.get_offset(SceneType.MAIN_SCENE, surface_value)
         
         self.draw_texture(surface_texture[0], screen, i, j, camera, offset_data)
         
@@ -254,23 +183,11 @@ class MainSceneDrawer:
         # building_height = self.scene_map_data.building_hight_map[i][j]
         
         if building_texture_id != 0:
-            building_texture = self.texture_manager.get_texture_pygame(building_texture_id)
+            building_texture = self.texture_manager.get_texture_pygame(SceneType.MAIN_SCENE, building_texture_id)
             if len(building_texture) != 0:
-                building_offset_data = self.texture_manager.get_offset(building_texture_id)
+                building_offset_data = self.texture_manager.get_offset(SceneType.MAIN_SCENE, building_texture_id)
                 self.draw_texture(building_texture[0], screen, i, j, camera, building_offset_data)
                 
-                # debug_grid_texture = self.texture_manager.get_texture_pygame(1)
-                # debug_grid_offset_data = self.texture_manager.get_offset(1)
-                # self.draw_texture(debug_grid_texture[0], screen, i, j, camera, debug_grid_offset_data)
-                
-                # adjust_grid_texture = self.texture_manager.get_texture_pygame(0)
-                # adjust_grid_offset_data = self.texture_manager.get_offset(0)
-                
-                # adjust_value = self.scene_map_data.adjust_gride_number[i][j]
-                
-                # if adjust_value != 0:
-                #     self.draw_texture(adjust_grid_texture[0], screen, i-adjust_value, j-adjust_value, camera, adjust_grid_offset_data)
-        
         
         # draw main character
         
@@ -284,15 +201,7 @@ class MainSceneDrawer:
             # print('camera: ', camera.pixel_x, camera.pixel_y)
             self.draw_texture(character_texture, screen, i, j, camera, character_offset_data)
         
-        # if j == self.main_character.x and i == self.main_character.y + 1:
-        #     character_texture = self.main_character.get_current_texture()
-        #     character_offset_data = self.main_character.get_current_offset()
-        #     # print('try to draw the character at : ', i, j)
-        #     # print('character_texture: ', character_texture)
-        #     # print('character_offset_data: ', character_offset_data)
-        #     # print('building_height: ', building_height)
-        #     # print('camera: ', camera.pixel_x, camera.pixel_y)
-        #     self.draw_texture(character_texture, screen, i-1, j, camera, character_offset_data)
+        
         
            
     
@@ -311,31 +220,7 @@ class MainSceneDrawer:
         loop_start_y = self.main_character.y - self.lower_bound
         loop_end_y = self.main_character.y + self.upper_bound
         
-        # print("loop_start_x: ", loop_start_x)
-        # print("loop_end_x: ", loop_end_x)
-        # print("loop_start_y: ", loop_start_y)
-        # print("loop_end_y: ", loop_end_y)
         
-        # for (dx, dy) in self.drawing_sequence:
-        #     i = loop_start_y + dy
-        #     j = loop_start_x + dx
-        #     if i < 0 or j < 0 or i >= self.grid_number_h or j >= self.grid_number_w:
-        #         continue
-        #     self.draw_earth(screen, i, j, self.camera)
-            
-        # for (dx, dy) in self.drawing_sequence:
-        #     i = loop_start_y + dy
-        #     j = loop_start_x + dx
-        #     if i < 0 or j < 0 or i >= self.grid_number_h or j >= self.grid_number_w:
-        #         continue
-        #     self.draw_surface(screen, i, j, self.camera)
-            
-        # for (dx, dy) in self.drawing_sequence:
-        #     i = loop_start_y + dy
-        #     j = loop_start_x + dx
-        #     if i < 0 or j < 0 or i >= self.grid_number_h or j >= self.grid_number_w:
-        #         continue
-        #     self.draw_element(screen, i, j, self.camera)
         
         for i in range(loop_start_y, loop_end_y):
             for j in range(loop_start_x, loop_end_x):
@@ -349,31 +234,7 @@ class MainSceneDrawer:
                     continue
                 self.draw_surface(screen, i, j, self.camera)
                 
-        # for i in range(loop_start_y, loop_end_y):
-        #     for j in range(loop_start_x, loop_end_x):
-        #         if i < 0 or j < 0 or i >= self.grid_number_h or j >= self.grid_number_w:
-        #             continue
-        #         self.draw_element(screen, i, j, self.camera)
         
-        # elements_to_draw = []
-        
-        # for i in range(loop_start_y, loop_end_y):
-        #     for j in range(loop_start_x, loop_end_x):
-        #         if i < 0 or j < 0 or i >= self.grid_number_h or j >= self.grid_number_w:
-        #             continue
-        #         # self.draw_element(screen, i, j, self.camera)
-        #         # draw_sequence = self.scene_map_data.drawing_sequence[i][j]
-        #         # print(draw_sequence, i, j)
-        #         if self.scene_map_data.adjust_building_map[i][j] != 0:
-        #             original_i = self.scene_map_data.original_building_i[i][j]
-        #             original_j = self.scene_map_data.original_building_j[i][j]
-        #             sequence = self.scene_map_data.building_everage[i][j]
-        #             elements_to_draw.append((sequence, original_i, original_j))
-                
-        # elements_to_draw.sort(key=lambda x: x[0])
-        
-        # for (draw_sequence, i, j) in elements_to_draw:
-        #     self.draw_element(screen, i, j, self.camera)
                 
         elements_to_draw = []
         
