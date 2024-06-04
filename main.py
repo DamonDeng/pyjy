@@ -56,6 +56,7 @@ def main():
         
     
 
+
     # Initialize Pygame
     pygame.init()
 
@@ -68,11 +69,12 @@ def main():
 
     original_surface = pygame.Surface((GameConfig.SUB_SCENE_WIDTH, GameConfig.SUB_SCENE_HEIGHT))
     # scale_surface = pygame.transform.scale(original_surface, (SCALE_WIDTH, SCALE_HEIGHT))
-    WINDOW_SIZE = (1600, 960)
+    WINDOW_SIZE = (1400, 800)
+
 
 
     # Set up display
-    main_screen = pygame.display.set_mode((1600, 960))
+    main_screen = pygame.display.set_mode(WINDOW_SIZE)
 
     image = pygame.image.load("./resource/ui/main_ui_bg.png")
 
@@ -91,8 +93,6 @@ def main():
     <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
 
     <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-    
-    看看中文行不行
 
     <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
 
@@ -140,7 +140,7 @@ def main():
     # Create a UITextBox with HTML-like theming
     text_box = pygame_gui.elements.UITextBox(
         html_text=display_html_text,
-        relative_rect=pygame.Rect((1151, 71), (441, 600)),
+        relative_rect=pygame.Rect((1033, 74), (359, 707)),
         manager=manager,
         object_id="#text_box"
     )
@@ -237,7 +237,7 @@ def main():
         
         main_screen.fill(DARK_GRAY)
         
-        main_screen.blit(screen, (481, 165))
+        main_screen.blit(screen, (381, 84))
         
 
         
@@ -277,6 +277,8 @@ def main():
 
     pygame.quit()
     # sys.exit()
+
+
 
 
 
