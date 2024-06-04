@@ -34,6 +34,11 @@ class MainCharacter:
         self.current_pic_index = 0
         
         self.move_pic_delay = 5 # how many frame to change the pic
+        
+        self.action_interval = 0.08 # how many second to response to the action
+        self.previous_action_time = 0
+        self.current_action_time = 0
+        
         self.move_count = 0
         
         
@@ -94,8 +99,12 @@ class MainCharacter:
                 self.current_pic_index = 0
                 self.move_count = 0
             
+            self.current_action_time = pygame.time.get_ticks()
             
-            if self.move_count % self.move_pic_delay == 0:
+            if self.current_action_time - self.previous_action_time > self.action_interval * 1000:
+                self.previous_action_time = self.current_action_time
+            
+            # if self.move_count % self.move_pic_delay == 0:
                 if self.current_scene_type == SceneType.MAIN_SCENE:
                     can_move = False
                     # print('self.x: ', self.x, 'self.y: ', self.y)
