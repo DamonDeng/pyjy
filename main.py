@@ -83,9 +83,12 @@ def main():
     pygame.display.set_caption(GameConfig.SCREEN_TITLE)
 
 
-    manager = pygame_gui.UIManager((WINDOW_SIZE))
+    manager = pygame_gui.UIManager((WINDOW_SIZE), starting_language='zh')
 
     display_html_text = """
+    
+    测试的中文
+    <font color='#00000'>白色的字用来表示可以显示的中文</font>
     <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
 
     very very long text , something like this is a very long text that will be wrapped in the text box
@@ -143,6 +146,14 @@ def main():
         relative_rect=pygame.Rect((1033, 74), (359, 707)),
         manager=manager,
         object_id="#text_box"
+    )
+    
+        # Create a multi-line UITextEntryBox
+    text_entry = pygame_gui.elements.UITextEntryBox(
+        relative_rect=pygame.Rect((380, 577), (640, 180)),
+        manager=manager,
+        object_id="#text_entry",
+        container=manager.get_root_container()
     )
 
 
