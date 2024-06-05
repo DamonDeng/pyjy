@@ -1,7 +1,7 @@
 import boto3
 import struct
 
-from pyjy.utils import BinaryReader
+from pyjy.utils.binary_reader import BinaryReader
 from pyjy.texture import TextureManager
 from pyjy.constants import GameConfig
 from pyjy.constants import SceneType
@@ -16,6 +16,8 @@ from pyjy.data_loader import RangerLoader
 from pyjy.scene_controller import SceneController
 from pyjy.music_player import MusicPlayer
 
+from pyjy.npcs.xiaoer import Xiaoer
+
 
 import numpy as np
 # from PIL import Image
@@ -24,6 +26,21 @@ import numpy as np
 import pygame
 import pygame_gui
 import math
+
+class MessageResponder:
+    
+    def __init__(self, display_text_box):
+        
+        self.display_text_box = display_text_box
+        
+    def message_from_npc(self, text_str):
+        
+        html_format_text = "<font color='#00FF00'> 店小二说: \n" + text_str + "</font>"
+        
+        self.display_text_box.append_html_text(html_format_text + "\n")
+
+        self.display_text_box.update_text_end_position(1000)
+        
 
 def main():
     texture_manager = TextureManager("./")
@@ -85,60 +102,9 @@ def main():
 
     manager = pygame_gui.UIManager((WINDOW_SIZE), starting_language='zh')
 
-    display_html_text = """
-    
-    测试的中文
-    <font color='#00000'>白色的字用来表示可以显示的中文</font>
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
-
-    <font color='#FF0000' face='arial'>This is a <b>wrapped</b> text box</font> and somthing out of the font tag
-
-    very very long text , something like this is a very long text that will be wrapped in the text box
-
-    <font color='#00FF00'>This is a <i>wrapped</i> text box</font>
-
-    <font color='#0000FF'>This is a <u>wrapped</u> text box</font>
 
 
-    """
+    display_html_text = ""
 
     # Create a UITextBox with HTML-like theming
     text_box = pygame_gui.elements.UITextBox(
@@ -147,14 +113,19 @@ def main():
         manager=manager,
         object_id="#text_box"
     )
-    
-        # Create a multi-line UITextEntryBox
+
+
+    # Create a multi-line UITextEntryBox
     text_entry = pygame_gui.elements.UITextEntryBox(
         relative_rect=pygame.Rect((380, 577), (640, 180)),
         manager=manager,
         object_id="#text_entry",
         container=manager.get_root_container()
     )
+
+    message_responder = MessageResponder(text_box)
+
+    xiaoer = Xiaoer(message_responder)
 
 
 
@@ -169,6 +140,7 @@ def main():
     def draw_the_screen(screen):
         scene_controller.draw(screen)
         
+    is_editing = False
 
     # Main game loop
     # frame_count = 0
@@ -177,69 +149,73 @@ def main():
     while running:
         time_delta = clock.tick(60) / 1000.0
         
+        detected_send_action = False
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 
-                if event.key == pygame.K_ESCAPE:
-                    running = False
-                elif event.key == pygame.K_x:
-                    # switch to the next scene
-                    current_scene_id = sub_scene_map_data.scene_id
-                    current_scene_id = current_scene_id + 1
-                    if current_scene_id >= GameConfig.SUB_SCENE_NUMBER:
-                        current_scene_id = 0
-                    sub_scene_map_data.switch_scene_data_by_id(current_scene_id)
-                    x = sub_scene_map_data.scene_map_info["EntranceX"]
-                    y = sub_scene_map_data.scene_map_info["EntranceY"]
-                    main_character.set_location(x, y)
-                    camera.follow_character(main_character)
-                    
-                    music_id = sub_scene_map_data.scene_map_info["EntranceMusic"]
-                    
-                    if music_id > 0 and music_id < 24:
-                    
-                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
-                        
-                        pygame.mixer.music.load(music_file_path)
-
-                        # Play the music in an infinite loop
-                        pygame.mixer.music.play(-1)
-                    
-                elif event.key == pygame.K_z:
-                    # switch to the previous scene
-                    current_scene_id = sub_scene_map_data.scene_id
-                    current_scene_id = current_scene_id - 1
-                    if current_scene_id < 0:
-                        current_scene_id = GameConfig.SUB_SCENE_NUMBER - 1
-                    sub_scene_map_data.switch_scene_data_by_id(current_scene_id)
-                    x = sub_scene_map_data.scene_map_info["EntranceX"]
-                    y = sub_scene_map_data.scene_map_info["EntranceY"]
-                    main_character.set_location(x, y)
-                    camera.follow_character(main_character)
-                    
-                    music_id = sub_scene_map_data.scene_map_info["EntranceMusic"]
-                    
-                    if music_id > 0 and music_id < 24:
-                    
-                        music_file_path = "../original_resource/music/" + str(music_id) + ".mid"
-                        
-                        pygame.mixer.music.load(music_file_path)
-
-                        # Play the music in an infinite loop
-                        pygame.mixer.music.play(-1)
+                if is_editing == True:
+                    if event.key == pygame.K_RETURN:
+                        # Check if the Shift key is also pressed
+                        shift_pressed = pygame.key.get_pressed()[pygame.K_LSHIFT] or pygame.key.get_pressed()[pygame.K_RSHIFT]
+                        if shift_pressed:
+                            # print("Shift+Enter detected!")
+                            
+                            detected_send_action = True
+                            
+                            input_text = text_entry.get_text()
+                            
+                            html_format_text = "<font color='#FFFFFF'> 你说:\n" + input_text + "</font>"
+                            
+                            text_box.append_html_text(html_format_text + "\n")
+                            
+                            text_box.update_text_end_position(1000)
+                            
+                            text_entry.set_text("")
+                            
+                            xiaoer.at_msg_receive(input_text)
+                            
+                elif is_editing == False:
                 
-            manager.process_events(event)
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                    
                 
                     
-                # Move the camera based on key presses
-        main_character.tick()
-        camera.follow_character(main_character, scene_controller.current_scene_type)
-        scene_controller.detect_to_switch()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Check if the mouse is over the entry textbox
+                if text_entry.rect.collidepoint(event.pos):
+                    # Stop responding to key down events for the main character
+                    is_editing = True
+                else:
+                    # Allow the main character to respond to key down events
+                    is_editing = False
+                    
+            elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object == text_entry:
+                # Handle text entry submission
+                text = event.text
+                # send_text(text)
+                # Clear the text entry box
+                text_entry.set_text("")
+                
+            if not detected_send_action:
+                manager.process_events(event)
             
-        original_surface.fill(WHITE)
-        draw_the_screen(original_surface)
+        if is_editing == True:
+            input_rect = pygame.Rect((380, 577), (640+100, 180-5))
+            pygame.key.set_text_input_rect(input_rect)
+                
+        elif is_editing == False:
+                        
+            # Move the camera based on key presses
+            main_character.tick()
+            camera.follow_character(main_character, scene_controller.current_scene_type)
+            scene_controller.detect_to_switch()
+                
+            original_surface.fill(WHITE)
+            draw_the_screen(original_surface)
 
         
         scale_surface = pygame.transform.scale(original_surface, (GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT))
@@ -288,6 +264,8 @@ def main():
 
     pygame.quit()
     # sys.exit()
+
+
 
 
 

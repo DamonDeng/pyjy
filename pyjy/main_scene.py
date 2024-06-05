@@ -1,6 +1,6 @@
 import numpy as np
 from pyjy.constants import GameConfig
-from pyjy.utils import BinaryReader
+from pyjy.utils.binary_reader import BinaryReader
 from pyjy.texture import TextureManager
 from pyjy.constants import SceneType
 

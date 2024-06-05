@@ -1,5 +1,5 @@
 from pyjy.constants import GameConfig
-from pyjy.utils import BinaryReader
+from pyjy.utils.binary_reader import BinaryReader
 
 import struct
 

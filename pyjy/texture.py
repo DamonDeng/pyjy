@@ -5,7 +5,7 @@ import pygame
 import zipfile
 
 from PIL import Image
-from pyjy.utils import BinaryReader
+from pyjy.utils.binary_reader import BinaryReader
 from pyjy.constants import Direction
 from pyjy.constants import SceneType
 
