@@ -26,7 +26,7 @@ class SubSceneMapData:
         sin_file_name = "./original_resource/save/allsin.grp", \
         def_file_name = "./original_resource/save/alldef.grp"):
 
-        scene_layer_result = BinaryReader.read_file_to_vector(sin_file_name, "H")
+        scene_layer_result = BinaryReader.read_file_to_vector(sin_file_name, "h")
         event_data_result = BinaryReader.read_file_to_vector(def_file_name, "h")
 
         self.scene_layer_np = np.array(scene_layer_result[:GameConfig.SUB_SCENE_ALL_LAYER_DATA_LENGTH]) \
@@ -65,6 +65,7 @@ class SubSceneMapData:
         
         self.walkable_map = self.building_map == 0
         
+        
         # check the surface_map to see if there is any water grid
         # the checking logic is from the above c++ code from original project
         
@@ -74,6 +75,8 @@ class SubSceneMapData:
                 if (num >= 179 and num <= 181) or num == 261 or num == 511 or (num >= 662 and num <= 665) or num == 674:
                     self.walkable_map[x, y] = False
         
+        # event data layout:
+        # CannotWalk, Index, Event1, Event2, Event3, CurrentPic, EndPic, BeginPic, PicDelay;
         
         for i in range(len(self.event_data)):
             if self.event_data[i][9] != 0 and self.event_data[i][10] != 0:
