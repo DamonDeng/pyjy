@@ -79,6 +79,12 @@ class MainCharacter:
     def remember_prev_location(self):
         self.prev_x = self.x
         self.prev_y = self.y
+        
+    def update(self, delta_time):
+        pass
+    
+    def process_event(self, event):
+        self.tick()
     
     def tick(self):
         keys = pygame.key.get_pressed()

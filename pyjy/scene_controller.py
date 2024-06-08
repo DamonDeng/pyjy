@@ -1,5 +1,6 @@
 from pyjy.constants import SceneType, Direction
 from pyjy.music_player import MusicPlayer
+import pygame
 
 class SceneController:
     
@@ -34,10 +35,16 @@ class SceneController:
             
             
     def draw(self, screen):
+        # print("SceneController draw")
+        # print("current_scene_type: ", self.current_scene_type)
+        
         if self.current_scene_type == SceneType.MAIN_SCENE:
             self.main_scene_drawer.draw(screen)
         elif self.current_scene_type == SceneType.SUB_SCENE:
             self.sub_scene_drawer.draw(screen)
+            
+        # drawing a rectangle into the screen for debug:
+        # pygame.draw.rect(screen, (255, 0, 0), (0, 0, 100, 100), 0)
             
     def detect_to_switch(self):
         

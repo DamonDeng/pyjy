@@ -1,0 +1,16 @@
+{
+    "#talk_box":
+    {
+        "colours":
+        {
+           "dark_bg":"#00000000",
+           "normal_text":"#ffffff"
+        },
+        "misc":
+        {
+           "shape": "rounded_rectangle",
+           "shape_corner_radius": "10"
+        }
+
+    }
+}

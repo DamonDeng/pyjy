@@ -9,14 +9,14 @@ class Camera:
         self.grid_x = 0
         self.grid_y = 0
         
-        self.max_screen_x = GameConfig.SCREEN_WIDTH
-        self.max_screen_y = GameConfig.SCREEN_HEIGHT
+        self.max_screen_x = GameConfig.GAME_SCREEN_WIDTH
+        self.max_screen_y = GameConfig.GAME_SCREEN_HEIGHT
         
     def follow_character(self, character, scene_type):
         
         if scene_type == SceneType.MAIN_SCENE:
-            grid_size_w = GameConfig.MAIN_SCENE_GRID_SIZE_W
-            grid_size_h = GameConfig.MAIN_SCENE_GRID_SIZE_H
+            grid_size_w = GameConfig.GRID_SIZE_W
+            grid_size_h = GameConfig.GRID_SIZE_H
             
             grid_number_w = GameConfig.MAIN_SCENE_GRID_NUMBER_W
             grid_number_h = GameConfig.MAIN_SCENE_GRID_NUMBER_H
@@ -26,8 +26,8 @@ class Camera:
             
         elif scene_type == SceneType.SUB_SCENE:
             
-            grid_size_w = GameConfig.SUB_SCENE_GRID_SIZE_W
-            grid_size_h = GameConfig.SUB_SCENE_GRID_SIZE_H
+            grid_size_w = GameConfig.GRID_SIZE_W
+            grid_size_h = GameConfig.GRID_SIZE_H
         
             grid_number_w = GameConfig.SUB_SCENE_GRID_NUMBER_W
             grid_number_h = GameConfig.SUB_SCENE_GRID_NUMBER_H

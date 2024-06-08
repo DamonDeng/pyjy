@@ -102,8 +102,8 @@ class SubSceneDrawer:
         self.texture_manager = texture_manager
         self.camera = camera
         
-        self.grid_size_w = GameConfig.SUB_SCENE_GRID_SIZE_W
-        self.grid_size_h = GameConfig.SUB_SCENE_GRID_SIZE_H
+        self.grid_size_w = GameConfig.GRID_SIZE_W
+        self.grid_size_h = GameConfig.GRID_SIZE_H
         
         self.grid_number_w = GameConfig.SUB_SCENE_GRID_NUMBER_W
         self.grid_number_h = GameConfig.SUB_SCENE_GRID_NUMBER_H

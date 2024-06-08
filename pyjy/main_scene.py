@@ -49,7 +49,7 @@ class MainSceneMapData:
                     # adding the texture width with one grid size
                     # to make the building with less than one gride size to be adjusted to be one grid size.
                     # minus 10 to make sure that building exactly be one grid to be adjusted to be more than one grid.
-                    gride_width = (texture_width+GameConfig.MAIN_SCENE_GRID_SIZE_W-10)// GameConfig.MAIN_SCENE_GRID_SIZE_W
+                    gride_width = (texture_width+GameConfig.GRID_SIZE_W-10)// GameConfig.GRID_SIZE_W
                     
                     # print("i, j, gride_width", i, j, gride_width)
                     
@@ -85,8 +85,8 @@ class MainSceneDrawer:
         self.texture_manager = texture_manager
         self.camera = camera
         
-        self.grid_size_w = GameConfig.MAIN_SCENE_GRID_SIZE_W
-        self.grid_size_h = GameConfig.MAIN_SCENE_GRID_SIZE_H
+        self.grid_size_w = GameConfig.GRID_SIZE_W
+        self.grid_size_h = GameConfig.GRID_SIZE_H
         
         self.grid_number_w = GameConfig.MAIN_SCENE_GRID_NUMBER_W
         self.grid_number_h = GameConfig.MAIN_SCENE_GRID_NUMBER_H
