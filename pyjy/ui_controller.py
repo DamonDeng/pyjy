@@ -40,7 +40,8 @@ class UIController:
             relative_rect=pygame.Rect((380, 577), (640, 180)),
             manager=self.ui_manager,
             object_id="#text_entry",
-            container=self.ui_manager.get_root_container()
+            container=self.ui_manager.get_root_container(),
+            placeholder_text='面对NPC按回车键开始对话， 按Shift-Enter提交对话，按ESC键退出对话。',
         )
 
         self.upper_talk_box = pygame_gui.elements.UITextBox(
@@ -70,6 +71,9 @@ class UIController:
         self.head_box_img = pygame.image.load(self.root_folder + "/resource/ui/head_box.png")
         self.head_box_img_bg = pygame.image.load(self.root_folder + "/resource/ui/head_box_background.png")
 
+    def update(self, time_delta):
+        self.ui_manager.update(time_delta)
+        
     def draw(self, time_delta):
         
         if self.central_controller.game_status == GameStatus.TALKING:
@@ -128,7 +132,7 @@ class UIController:
             
 
         
-        self.ui_manager.update(time_delta)
+        # self.ui_manager.update(time_delta)
         
         
         self.ui_manager.draw_ui(self.main_screen)

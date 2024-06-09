@@ -1,3 +1,5 @@
+import threading
+
 from llm.Bedrock import BedrockClaude3
 from llm.Bedrock import BedrockMistral
 from llm.Bedrock import BedrockLlama3
@@ -36,3 +38,23 @@ class LLMInterface:
             return BedrockLlama3.invoke(prompt,LLMInterface.name_to_id[model_name])
         else:
             raise ValueError(f"Invalid model name: {model_name}")
+        
+    @staticmethod
+    def process_llm_response(prompt_message, callback):
+        # Create a new thread to invoke the LLM service
+        t = threading.Thread(target=LLMInterface.invoke_llm_service, args=(prompt_message, callback))
+        t.start()
+
+    @staticmethod
+    def invoke_llm_service(prompt_message, callback):
+        # Invoke the LLM service
+        
+        # response = LLMInterface.invoke('claude-3', prompt_message)
+        # response = LLMInterface.invoke(LLMInterface.Llama_70B, prompt_message)
+        response = LLMInterface.invoke(LLMInterface.Claude3_Sonet, prompt_message)
+        
+        
+        # logger.log_info(f"Response from LLM: {str(response)}")
+        
+        # Call the callback function with the response
+        callback(response)

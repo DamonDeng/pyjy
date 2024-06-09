@@ -66,7 +66,7 @@ def main():
         # detected_send_action = False
         
 
-        continue_running = central_controller.process_events()
+        continue_running = central_controller.process_events(time_delta)
         
         if not continue_running:
             break

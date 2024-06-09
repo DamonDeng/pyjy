@@ -12,7 +12,9 @@ from pyjy.music_player import MusicPlayer
 from pyjy.scene_controller import SceneController
 from pyjy.constants import GameConfig, GameStatus
 from pyjy.ui_controller import UIController
-
+from pyjy.constants import SceneType
+from pyjy.message import Message
+from pyjy.npcs.xiaoer import Xiaoer
 
 
     
@@ -64,6 +66,13 @@ class CentralController:
         
         self.npcs = []
         
+        xiaoer = Xiaoer()
+        
+        self.add_npc(xiaoer)
+        
+        self.talking_npc = None
+        self.main_character_head_img = None
+        
         
         
         
@@ -80,13 +89,46 @@ class CentralController:
     def set_scene_controller(self, scene_controller):
         self.scene_controller = scene_controller
         
-    
         
     def add_npc(self, npc):
         self.npcs.append(npc)
+        npc.register_to_controller(self)
         
-    def process_events(self):
+    def message_from_npc(self, message:Message):
+        npc_cn_name = message.sender_cn_name
+        message_text = message.text
+        
+        html_format_text = "<font color='#00FF00'>" + npc_cn_name + "说:\n" + message_text + "</font>"
+        
+        self.ui_controller.system_message_box.append_html_text(html_format_text + "\n")
+        
+        display_message_text = "<font color='#00FF00'>" + message_text + "</font>"
+        
+        self.ui_controller.upper_talk_box.set_text(display_message_text)
+    
+    def look_for_npc(self, x, y):
+        for npc in self.npcs:
+            if npc.sub_scene_id == self.scene_controller.current_sub_scene_id:
+                if npc.sub_scene_location == (x, y):
+                    return npc
+                
+    def get_upper_talker_img(self):
+        if self.talking_npc is None:
+            return None
+        return self.talking_npc.get_talker_img()
+        
+    def get_lower_talker_img(self):
+        if self.main_character_head_img is None:
+            main_character_head_img = pygame.image.load(self.root_folder + "/original_resource/resource/hdgrp/0.png")
+            main_character_head_img_scaled = pygame.transform.scale(main_character_head_img,(92, 92))
+            self.main_character_head_img = main_character_head_img_scaled
+            
+        return self.main_character_head_img
+
+        
+    def process_events(self, time_delta):
         detected_send_action = False
+        event_comsumed = False
     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,30 +136,64 @@ class CentralController:
             elif event.type == pygame.KEYDOWN:
                 
                 if self.game_status == GameStatus.TALKING:
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.ui_controller.text_entry.unfocus()
+                        self.game_status = GameStatus.INGAME
+                    elif event.key == pygame.K_RETURN:
                         # Check if the Shift key is also pressed
                         shift_pressed = pygame.key.get_pressed()[pygame.K_LSHIFT] or pygame.key.get_pressed()[pygame.K_RSHIFT]
                         if shift_pressed:
                             # print("Shift+Enter detected!")
                             
                             detected_send_action = True
+                            event_comsumed = True
                             
-                            # input_text = text_entry.get_text()
+                            input_text = self.ui_controller.text_entry.get_text()
                             
-                            # html_format_text = "<font color='#FFFFFF'> 你说:\n" + input_text + "</font>"
+                            html_format_text = "<font color='#FFFFFF'> 你说:\n" + input_text + "</font>"
                             
-                            # text_box.append_html_text(html_format_text + "\n")
+                            self.ui_controller.system_message_box.append_html_text(html_format_text + "\n")
                             
-                            # text_box.update_text_end_position(1000)
+                            self.ui_controller.system_message_box.update_text_end_position(1000)
                             
-                            # text_entry.set_text("")
+                            self.ui_controller.text_entry.set_text("")
                             
-                            # xiaoer.at_msg_receive(input_text)
+                            talking_npc_thinking = "<font color='#00FF00>若有所思中...</font>"
+                            
+                            self.ui_controller.upper_talk_box.set_text(talking_npc_thinking)
+                            
+                            self.ui_controller.lower_talk_box.set_text(input_text)
+                            
+                            main_character_cn_name = self.main_character.cn_name
+                            main_character_id = self.main_character.id_in_game
+                            
+                            npc_id = self.talking_npc.id_in_game
+                            npc_cn_name = self.talking_npc.cn_name
+                            
+                            message = Message(main_character_id, main_character_cn_name, npc_id, npc_cn_name, input_text)
+                            
+                            self.talking_npc.at_msg_receive(message)
                             
                 elif self.game_status == GameStatus.INGAME:
                 
                     if event.key == pygame.K_ESCAPE:
                         return False
+                    elif event.key == pygame.K_RETURN:
+                        if self.scene_controller.current_scene_type == SceneType.SUB_SCENE:
+                            (character_facing_x, character_facing_y) = self.main_character.get_facing_grid_location()
+                            print('character_facing_x: ', character_facing_x)
+                            print('character_facing_y: ', character_facing_y)
+                            
+                            facing_npc = self.look_for_npc(character_facing_x, character_facing_y)
+                            
+                            if facing_npc is not None:
+                                print('facing_npc: ', facing_npc)
+                                self.game_status = GameStatus.TALKING
+                                self.talking_npc = facing_npc
+                                self.ui_controller.text_entry.focus()
+                                event_comsumed = True
+                            else:
+                                print('no npc found')
                     
                 
                     
@@ -138,8 +214,9 @@ class CentralController:
             #     # Clear the text entry box
             #     text_entry.set_text("")
                 
-            # if not detected_send_action:
-            #     manager.process_events(event)
+            if not event_comsumed:
+                self.ui_controller.ui_manager.process_events(event)
+                self.ui_controller.ui_manager.update(time_delta)
             
         # if is_editing == True:
         #     input_rect = pygame.Rect((380, 577), (640+100, 180-5))

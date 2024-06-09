@@ -10,6 +10,9 @@ class MainCharacter:
     def __init__(self, x, y, texture_manager, main_scene_data, sub_scene_data):
         # self.scene_status = MainCharacter.InMain
         
+        self.id_in_game = 777
+        self.cn_name = "大虾头"
+        
         self.main_x = x
         self.main_y = y
         self.sub_x = 0
@@ -58,6 +61,16 @@ class MainCharacter:
             
         self.x = x
         self.y = y
+        
+    def get_facing_grid_location(self):
+        if self.current_direction == Direction.UP:
+            return (self.x, self.y - 1)
+        elif self.current_direction == Direction.DOWN:
+            return (self.x, self.y + 1)
+        elif self.current_direction == Direction.LEFT:
+            return (self.x - 1, self.y)
+        elif self.current_direction == Direction.RIGHT:
+            return (self.x + 1, self.y)
         
     def get_current_texture(self):
         
