@@ -163,3 +163,7 @@ cython_debug/
 
 # Game Content
 original_resource/
+
+# playground notebooks
+
+nb/
