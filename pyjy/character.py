@@ -144,24 +144,32 @@ class MainCharacter:
                                 can_move = True
                                 self.remember_prev_location()
                                 self.y -= 1
+                                self.main_x = self.x
+                                self.main_y = self.y
                     elif input_move_direction == Direction.DOWN:
                         if self.y + 1 < MAIN_SCENE_DOWN_BOUND:
                             if self.main_scene_data.walkable_map[self.y + 1][self.x]:
                                 can_move = True
                                 self.remember_prev_location()
                                 self.y += 1
+                                self.main_x = self.x
+                                self.main_y = self.y
                     elif input_move_direction == Direction.LEFT:
                         if self.x - 1 >= MAIN_SCENE_LEFT_BOUND:
                             if self.main_scene_data.walkable_map[self.y][self.x - 1]:
                                 can_move = True
                                 self.remember_prev_location()
                                 self.x -= 1
+                                self.main_x = self.x
+                                self.main_y = self.y
                     elif input_move_direction == Direction.RIGHT:
                         if self.x + 1 < MAIN_SCENE_RIGHT_BOUND:
                             if self.main_scene_data.walkable_map[self.y][self.x + 1]:
                                 can_move = True
                                 self.remember_prev_location()
                                 self.x += 1
+                                self.main_x = self.x
+                                self.main_y = self.y
                 elif self.current_scene_type == SceneType.SUB_SCENE:
                     can_move = False
                     # print('self.x: ', self.x, 'self.y: ', self.y)
@@ -170,21 +178,29 @@ class MainCharacter:
                             can_move = True
                             self.remember_prev_location()
                             self.y -= 1
+                            self.sub_x = self.x
+                            self.sub_y = self.y
                     elif input_move_direction == Direction.DOWN:
                         if self.sub_scene_data.walkable_map[self.y + 1][self.x]:
                             can_move = True
                             self.remember_prev_location()
                             self.y += 1
+                            self.sub_x = self.x
+                            self.sub_y = self.y
                     elif input_move_direction == Direction.LEFT:
                         if self.sub_scene_data.walkable_map[self.y][self.x - 1]:
                             can_move = True
                             self.remember_prev_location()
                             self.x -= 1
+                            self.sub_x = self.x
+                            self.sub_y = self.y
                     elif input_move_direction == Direction.RIGHT:
                         if self.sub_scene_data.walkable_map[self.y][self.x + 1]:
                             can_move = True
                             self.remember_prev_location()
                             self.x += 1
+                            self.sub_x = self.x
+                            self.sub_y = self.y
                 else:
                     can_move = False
                             

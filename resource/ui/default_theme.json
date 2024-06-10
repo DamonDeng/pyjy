@@ -12,5 +12,12 @@
            "shape_corner_radius": "10"
         }
 
+    },
+    "@coordinator_label":
+     {
+        "colours":
+         {
+             "normal_text":"rgb(234, 210, 46)"
+         }
     }
 }

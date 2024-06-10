@@ -63,6 +63,66 @@ class UIController:
         )
         
         self.lower_talk_box.hide()
+        
+        # Create a label text component with no border and transparent background
+        self.mx_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((77, 22), (60, 20)),
+                                                text="MX: ???",
+                                                manager=self.ui_manager,
+                                                container=self.ui_manager.get_root_container(),
+                                                object_id=pygame_gui.core.ObjectID(class_id='@coordinator_label',
+                                                                                    object_id='#mx_label'),
+                                                anchors={
+                                                    "left": "left",
+                                                    "right": "right",
+                                                    "top": "top",
+                                                    "bottom": "bottom"
+                                                }
+                                                )
+        
+        # Create a label text component with no border and transparent background
+        self.my_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((140, 22), (60, 20)),
+                                                text="MY: ???",
+                                                manager=self.ui_manager,
+                                                container=self.ui_manager.get_root_container(),
+                                                object_id=pygame_gui.core.ObjectID(class_id='@coordinator_label',
+                                                                                    object_id='#my_label'),
+                                                anchors={
+                                                    "left": "left",
+                                                    "right": "right",
+                                                    "top": "top",
+                                                    "bottom": "bottom"
+                                                }
+                                                )
+        
+        # Create a label text component with no border and transparent background
+        self.sx_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((1180, 22), (60, 20)),
+                                                text="SX: ???",
+                                                manager=self.ui_manager,
+                                                container=self.ui_manager.get_root_container(),
+                                                object_id=pygame_gui.core.ObjectID(class_id='@coordinator_label',
+                                                                                    object_id='#sx_label'),
+                                                anchors={
+                                                    "left": "left",
+                                                    "right": "right",
+                                                    "top": "top",
+                                                    "bottom": "bottom"
+                                                }
+                                                )
+        
+        # Create a label text component with no border and transparent background
+        self.sy_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((1240, 22), (60, 20)),
+                                                text="SY: ???",
+                                                manager=self.ui_manager,
+                                                container=self.ui_manager.get_root_container(),
+                                                object_id=pygame_gui.core.ObjectID(class_id='@coordinator_label',
+                                                                                    object_id='#sy_label'),
+                                                anchors={
+                                                    "left": "left",
+                                                    "right": "right",
+                                                    "top": "top",
+                                                    "bottom": "bottom"
+                                                }
+                                                )
 
 
         
@@ -74,6 +134,43 @@ class UIController:
         self.head_box_img = pygame.image.load(self.root_folder + "/resource/ui/head_box.png")
         self.head_box_img_bg = pygame.image.load(self.root_folder + "/resource/ui/head_box_background.png")
 
+    def summit_entry_text(self):
+        
+        input_text = self.text_entry.get_text()
+        
+        html_format_text = "<font color='#FFFFFF'> 你:\n" + input_text + "</font>"
+        
+        self.system_message_box.append_html_text(html_format_text + "\n")
+        
+        self.system_message_box.update_text_end_position(1000)
+        
+        self.text_entry.set_text("")
+        
+        talking_npc_thinking = "<font color='#00FF00'>若有所思中...</font>"
+        
+        self.upper_talk_box.set_text(talking_npc_thinking)
+        
+        self.lower_talk_box.set_text(input_text)
+        
+    def update_message_from_npc(self, message):
+        npc_cn_name = message.sender_cn_name
+        message_text = message.text
+        
+        html_format_text = "<font color='#00FF00'>" + npc_cn_name + ":\n" + message_text + "</font>"
+        
+        self.system_message_box.append_html_text(html_format_text + "\n")
+        
+        display_message_text = "<font color='#00FF00'>" + message_text + "</font>"
+        
+        self.upper_talk_box.set_text(display_message_text)
+                            
+    def update_coordinator_label(self, mx, my, sx, sy):
+        self.mx_label.set_text("MX: " + str(mx))
+        self.my_label.set_text("MY: " + str(my))
+        self.sx_label.set_text("SX: " + str(sx))
+        self.sy_label.set_text("SY: " + str(sy))
+        
+        
     def update(self, time_delta):
         self.ui_manager.update(time_delta)
         

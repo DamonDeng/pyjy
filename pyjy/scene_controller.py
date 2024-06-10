@@ -65,8 +65,8 @@ class SceneController:
                 init_x = self.current_sub_scene_info["EntranceX"]
                 init_y = self.current_sub_scene_info["EntranceY"]
                 
-                self.main_scene_drawer.main_character.set_location(init_x, init_y)
                 self.main_scene_drawer.main_character.current_scene_type = SceneType.SUB_SCENE
+                self.main_scene_drawer.main_character.set_location(init_x, init_y)
                 
                 enter_music_id = self.current_sub_scene_info["EntranceMusic"]
                 
@@ -139,9 +139,9 @@ class SceneController:
                 
                     self.music_player.play_mid_by_id(enter_music_id)
                 
-                    self.sub_scene_drawer.main_character.set_location(new_entrance_x, new_entrance_y)
                     self.sub_scene_drawer.main_character.current_scene_type = SceneType.MAIN_SCENE
-    
+                    self.sub_scene_drawer.main_character.set_location(new_entrance_x, new_entrance_y)
+                    
         
     
         

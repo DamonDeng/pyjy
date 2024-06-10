@@ -100,16 +100,9 @@ class CentralController:
         npc.register_to_controller(self)
         
     def message_from_npc(self, message:Message):
-        npc_cn_name = message.sender_cn_name
-        message_text = message.text
         
-        html_format_text = "<font color='#00FF00'>" + npc_cn_name + "说:\n" + message_text + "</font>"
+        self.ui_controller.update_message_from_npc(message)
         
-        self.ui_controller.system_message_box.append_html_text(html_format_text + "\n")
-        
-        display_message_text = "<font color='#00FF00'>" + message_text + "</font>"
-        
-        self.ui_controller.upper_talk_box.set_text(display_message_text)
     
     def look_for_npc(self, x, y):
         for npc in self.npcs:
@@ -155,19 +148,7 @@ class CentralController:
                             
                             input_text = self.ui_controller.text_entry.get_text()
                             
-                            html_format_text = "<font color='#FFFFFF'> 你说:\n" + input_text + "</font>"
-                            
-                            self.ui_controller.system_message_box.append_html_text(html_format_text + "\n")
-                            
-                            self.ui_controller.system_message_box.update_text_end_position(1000)
-                            
-                            self.ui_controller.text_entry.set_text("")
-                            
-                            talking_npc_thinking = "<font color='#00FF00'>若有所思中...</font>"
-                            
-                            self.ui_controller.upper_talk_box.set_text(talking_npc_thinking)
-                            
-                            self.ui_controller.lower_talk_box.set_text(input_text)
+                            self.ui_controller.summit_entry_text()
                             
                             main_character_cn_name = self.main_character.cn_name
                             main_character_id = self.main_character.id_in_game
@@ -232,7 +213,15 @@ class CentralController:
                 
             if not event_comsumed:
                 self.ui_controller.ui_manager.process_events(event)
-                self.ui_controller.ui_manager.update(time_delta)
+         
+        if not event_comsumed:    
+            mx = self.main_character.main_x
+            my = self.main_character.main_y
+            sx = self.main_character.sub_x
+            sy = self.main_character.sub_y
+            self.ui_controller.update_coordinator_label(mx, my, sx, sy)
+            
+            self.ui_controller.ui_manager.update(time_delta)
             
         # if is_editing == True:
         #     input_rect = pygame.Rect((380, 577), (640+100, 180-5))
