@@ -52,6 +52,7 @@ class UIController:
             container=self.ui_manager.get_root_container(),
         )
 
+        self.upper_talk_box.hide()
 
         self.lower_talk_box = pygame_gui.elements.UITextBox(
             html_text = "",
@@ -60,6 +61,8 @@ class UIController:
             object_id="#talk_box",
             container=self.ui_manager.get_root_container(),
         )
+        
+        self.lower_talk_box.hide()
 
 
         

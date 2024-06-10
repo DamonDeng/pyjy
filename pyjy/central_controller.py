@@ -15,6 +15,7 @@ from pyjy.ui_controller import UIController
 from pyjy.constants import SceneType
 from pyjy.message import Message
 from pyjy.npcs.xiaoer import Xiaoer
+from pyjy.npcs.zhanggui import Zhanggui
 
 
     
@@ -69,6 +70,10 @@ class CentralController:
         xiaoer = Xiaoer()
         
         self.add_npc(xiaoer)
+        
+        zhanggui = Zhanggui()
+        
+        self.add_npc(zhanggui)
         
         self.talking_npc = None
         self.main_character_head_img = None
@@ -158,7 +163,7 @@ class CentralController:
                             
                             self.ui_controller.text_entry.set_text("")
                             
-                            talking_npc_thinking = "<font color='#00FF00>若有所思中...</font>"
+                            talking_npc_thinking = "<font color='#00FF00'>若有所思中...</font>"
                             
                             self.ui_controller.upper_talk_box.set_text(talking_npc_thinking)
                             
@@ -189,7 +194,18 @@ class CentralController:
                             if facing_npc is not None:
                                 print('facing_npc: ', facing_npc)
                                 self.game_status = GameStatus.TALKING
-                                self.talking_npc = facing_npc
+                                
+                                if self.talking_npc is None:
+                                    self.talking_npc = facing_npc
+                                    self.ui_controller.upper_talk_box.set_text("")
+                                    self.ui_controller.lower_talk_box.set_text("")
+                                else:
+                                
+                                    if self.talking_npc.id_in_game != facing_npc.id_in_game:
+                                        self.talking_npc = facing_npc
+                                        self.ui_controller.upper_talk_box.set_text("")
+                                        self.ui_controller.lower_talk_box.set_text("")    
+                                
                                 self.ui_controller.text_entry.focus()
                                 event_comsumed = True
                             else:
